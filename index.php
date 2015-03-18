@@ -125,8 +125,8 @@ function getGSMProduct($url)
     $data['product_name'] = strip_tags($productname->innertext);
 
     $spec = $html->find('div#specs-list', 0);
-    //var_dump($spec);
-    //exit;
+    var_dump($spec);
+    exit;
     $specHtml = str_get_html($spec->outertext);
     foreach ($specHtml->find('table') as $table) {
 
@@ -195,31 +195,19 @@ productAddDB($ret);
 function productAddDB($data)
 {
     // wrtie query in for DB
-    var_dump($data);
-    exit;
+    //var_dump($data);
+    //exit;
     $query = "INSERT INTO `products`"
         . " ( `product_name`, `category_id`, `product_type_id`, `brand_id`, `product_alias`, `release_date`, `announce_date`, `sim`, `status`, `date_added`) "
         . "VALUES "
         . "( '" . $data['product_name'] . "', '1', '1', '1', '" . $data['product_name'] . "', '" . $data['announced'] . "', '" . $data['announced'] . "', '" . $data['sim'] . "', '0', CURRENT_TIMESTAMP); ";
 
     mysql_query($query) or die(mysql_error());
-
     $productid = mysql_insert_id();
 
-    $batteryQry = "INSERT INTO `gadgets`.`product_battery` "
-        . "(`product_id`, `battery`, `standby`, `talktime`) "
-        . "VALUES (" . $productid . ", '" . $data['battery'] . "', '" . $data['Stand-by'] . "', '" . $data['talk time'] . "')";
-
-    mysql_query($batteryQry) or die(mysql_error());
-
-    $bodyQry = "INSERT INTO `gadgets`.`product_body` "
-        . "(`product_id`, `dimension`, `weight`)"
-        . " VALUES ('" . $productid . "', '" . $data['dimensions'] . "', '" . $data['weight'] . "')";
-    mysql_query($bodyQry) or die(mysql_error());
-
-    $cameraQry = "INSERT INTO `gadgets`.`product_camera` (`product_id`, `primary_cam`, `features`, `video`, `secondary`)"
-        . " VALUES ('" . $productid . "', '" . $data['primary'] . "', '" . $data['features'] . "', '" . $data['video'] . "', '" . $data['secondary'] . "');";
-    mysql_query($cameraQry) or die(mysql_error());
+    //mysql_query($batteryQry) or die(mysql_error());
+    //mysql_query($bodyQry) or die(mysql_error());
+    //mysql_query($cameraQry) or die(mysql_error());
 
 
     if (isset($data['gprs'])) {
@@ -258,6 +246,19 @@ function productAddDB($data)
     } else {
         $data['EDGE'] = 0;
     }
+
+    $batteryQry = "INSERT INTO `gadgets`.`product_battery` "
+        . "(`product_id`, `battery`, `standby`, `talktime`) "
+        . "VALUES (" . $productid . ", '" . $data['battery'] . "', '" . $data['Stand-by'] . "', '" . $data['talk time'] . "')";
+
+    $bodyQry = "INSERT INTO `gadgets`.`product_body` "
+        . "(`product_id`, `dimension`, `weight`)"
+        . " VALUES ('" . $productid . "', '" . $data['dimensions'] . "', '" . $data['weight'] . "')";
+
+    $cameraQry = "INSERT INTO `gadgets`.`product_camera` (`product_id`, `primary_cam`, `features`, `video`, `secondary`)"
+        . " VALUES ('" . $productid . "', '" . $data['primary'] . "', '" . $data['features'] . "', '" . $data['video'] . "', '" . $data['secondary'] . "');";
+
+
     $dataQry = "INSERT INTO `gadgets`.`product_data` "
         . "(`product_id`, `gprs`, `edge`, `speed`, `wlan`, `bluetooth`, `nfc`, `usb`) VALUES "
         . "('" . $productid . "', '" . $data['gprs'] . "', '" . $data['edge'] . "', '" . $data['speed'] . "', '" . $data['wlan'] . "', '" . $data['bluetooth'] . "', '" . $data['nfc'] . "', '" . $data['usb'] . "')";
@@ -265,8 +266,6 @@ function productAddDB($data)
     $displayQuery = "INSERT INTO `product_display`(`product_id`, `type`, `size`, `multitouch`, `protection`, `display_others`) VALUES ('" . $productid . "','" . $data['type'] . "','" . $data['size'] . "','" . $data['multitouch'] . "','" . $data['protection'] . "','" . $data[''] . "')";
 
     $featuresQuery = "INSERT INTO `product_features` (`product_id`, `os`, `chipset`, `cpu`, `gpu`, `sensors`, `messaging`, `browser`, `radio`, `gps`, `java`, `colors`, `features_others`) VALUES ('" . $productid . "','" . $data['os'] . "','" . $data['chipset'] . "','" . $data['cpu'] . "','" . $data['gpu'] . "','" . $data['sensors'] . "','" . $data['messaging'] . "','" . $data['browser'] . "','" . $data['radio'] . "','" . $data['gps'] . "','" . $data['java'] . "','" . $data['colors'] . "','NA')";
-
-   // $featuresQuery .= " VALUES ('" . $productid . "','" . $data['os'] . "','" . $data['chipset'] . "','" . $data['cpu'] . "','" . $data['gpu'] . "','" . $data['sensors'] . "','" . $data['messaging'] . "','" . $data['browser'] . "','" . $data['radio'] . "','" . $data['gps'] . "','" . $data['java'] . "','" . $data['colors'] . "','NA')";
 
     $memoryQuery = "INSERT INTO `product_memory`(`product_id`, `card_slot`, `ram`, `internal`) VALUES ('" . $productid . "','" . $data['card_slot'] . "','" . $data['ram'] . "','" . $data['internal'] . "')";
 
