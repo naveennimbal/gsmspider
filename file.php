@@ -1,15 +1,9 @@
 <?php
 /// this file will get the  product html files for the
 
-/**
- * Created by PhpStorm.
- * User: Naveen
- * Date: 3/10/15
- * Time: 10:08 PM
- */
-
 
 ini_set("display_error", 1);
+ini_set("max_execution_time", 30000);
 /**
  * Created by PhpStorm.
  * User: Naveen
@@ -20,47 +14,6 @@ include_once 'config.php';
 include_once 'simple_html_dom.php';
 include_once 'simple_html_dom_utility.php';
 
-$brantsStr = <<<HTML
-<ul>
-<li><a href="samsung-phones-9.php">Samsung</a></li>
-<li class="on"><a href="apple-phones-48.php">Apple</a></li>
-<li><a href="microsoft-phones-64.php">Microsoft</a></li>
-<li><a href="nokia-phones-1.php">Nokia</a></li>
-<li><a href="sony-phones-7.php">Sony</a></li>
-<li><a href="lg-phones-20.php">LG</a></li>
-<li><a href="htc-phones-45.php">HTC</a></li>
-<li><a href="motorola-phones-4.php">Motorola</a></li>
-<li><a href="huawei-phones-58.php">Huawei</a></li>
-<li><a href="lenovo-phones-73.php">Lenovo</a></li>
-<li><a href="xiaomi-phones-80.php">Xiaomi</a></li>
-<li><a href="acer-phones-59.php">Acer</a></li>
-<li><a href="asus-phones-46.php">Asus</a></li>
-<li><a href="blackberry-phones-36.php">BlackBerry</a></li>
-<li><a href="alcatel-phones-5.php">Alcatel</a></li>
-<li><a href="zte-phones-62.php">ZTE</a></li>
-<li><a href="toshiba-phones-44.php">Toshiba</a></li>
-<li><a href="vodafone-phones-53.php">Vodafone</a></li>
-<li><a href="t_mobile-phones-55.php">T-Mobile</a></li>
-<li><a href="gigabyte-phones-47.php">Gigabyte</a></li>
-<li><a href="pantech-phones-32.php">Pantech</a></li>
-<li><a href="xolo-phones-85.php">XOLO</a></li>
-<li><a href="lava-phones-94.php">Lava</a></li>
-<li><a href="micromax-phones-66.php">Micromax</a>
-</li><li><a href="blu-phones-67.php">BLU</a></li>
-<li><a href="spice-phones-68.php">Spice</a></li>
-<li><a href="prestigio-phones-86.php">Prestigio</a>
-</li><li><a href="verykool-phones-70.php">verykool</a></li>
-<li><a href="maxwest-phones-87.php">Maxwest</a></li>
-<li><a href="celkon-phones-75.php">Celkon</a></li>
-<li><a href="gionee-phones-92.php">Gionee</a></li>
-<li><a href="vivo-phones-98.php">vivo</a></li>
-<li><a href="niu-phones-79.php">NIU</a></li>
-<li><a href="yezz-phones-78.php">Yezz</a></li>
-<li><a href="parla-phones-81.php">Parla</a></li>
-<li><a href="plum-phones-72.php">Plum</a></li>
-</ul>
-
-HTML;
 //$html = str_get_html($brantsStr);
 //echo "<pre>";
 $html = file_get_html('http://www.gsmarena.com/');
@@ -84,16 +37,46 @@ foreach ($html->find('div#brandmenu') as $ul) {
     //exit;
 }
 
+
+getAllProductLinks($category);
+
+
+/***
+ * @param   $url
+ * @return array
+ *
+ */
+
+function getAllProductLinks($urls){
+    $productLinks=array();
+    foreach($urls as $url){
+        $brands = getPagingLinks($url);
+        foreach($brands as $brandUrl){
+            $brandPages = getPagingLinks($brandUrl);
+            //foreach($brandPages as $brandPageUrl) {
+                $productLinks[] =  getPhoneLinks($brandPages);
+           // }
+        }
+    }
+    echo "<pre>";
+    print_r($productLinks); exit;
+    return $productLinks;
+}
+
+
+
 //$html2 = file_get_html('http://www.gsmarena.com/motorola-phones-4.php');
 //$html2->find('div.nav-pages')
 
-   /// for finding page links on the first brand page
-function getPageLinks($html){
+/// for finding page links on the first brand page
+function getPagingLinks($url){
+    $html = file_get_html($url);
     $pageLinks=array();
+    $pageLinks[]=$url;
     foreach($html->find('div.nav-pages') as $link){
-        foreach($link->find('a') as $url ){
+         foreach($link->find('a') as $url ){
             //var_dump($url->attr['href']); exit;
-            $pageLinks[] = $url->attr['href'];
+            $pageLinks[] = "http://www.gsmarena.com/" .$url->attr['href'];
         }
     }
     //print_r($pageLinks);
@@ -102,13 +85,33 @@ function getPageLinks($html){
 }
 
 
+/****
+ * get all the links on the of the brand
+ * @params  array of the first pages of the brands
+ * @return  array of the pages of the brands
+ */
+
+function getAllBrandPages($urls=array()){
+    $pageUrls = array();
+    foreach($urls as $brand=>$url ){
+        //$pageUrls[$brand][] = $url;
+        $pageUrls[$brand] = getPagingLinks($url);
+    }
+    /*echo("<pre>");
+    print_r($pageUrls);
+    exit;*/
+    return $pageUrls;
+}
 
 
 
+//getPhoneLinks($category);
 
-getPhoneLinks($category);
-
-
+/**
+ * @param $category
+ * @return array of urls the product pages
+ *
+ */
 function getPhoneLinks($category)
 {
     $phoneLinks = array();
@@ -124,7 +127,8 @@ function getPhoneLinks($category)
             }
         }
     }
-    print_r($phoneLinks);
+    //echo  "<pre>";
+    //print_r($phoneLinks);
     return $phoneLinks;
 
 }

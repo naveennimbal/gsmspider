@@ -125,8 +125,6 @@ function getGSMProduct($url)
     $data['product_name'] = strip_tags($productname->innertext);
 
     $spec = $html->find('div#specs-list', 0);
-    var_dump($spec);
-    exit;
     $specHtml = str_get_html($spec->outertext);
     foreach ($specHtml->find('table') as $table) {
 
@@ -147,7 +145,7 @@ function getGSMProduct($url)
                 $keyname = "";
                 if (isset($href)) {
                     //$data[$href[0]->innertext] ;
-                    $keyname = strtolower(strip_tags($href->innertext));
+                    $keyname = strtolower(($href->innertext));
                     $data[$keyname] = "";
                     $keyname2 = strtolower(strip_tags($href->innertext));
                 } else {
@@ -160,16 +158,16 @@ function getGSMProduct($url)
                         $data['battery'] = strip_tags($td->innertext);
                     }
 
-                    if($keyname == "internal"){
-                        $data['ram'] ="";
-                        $data['internal'] ="";
-                        $mem = explode(",",strip_tags($td->innertext));
+                    if ($keyname == "internal") {
+                        $data['ram'] = "";
+                        $data['internal'] = "";
+                        $mem = explode(",", strip_tags($td->innertext));
                         $data['ram'] = $mem[1];
-                        $data['internal'] =$mem[0];
+                        $data['internal'] = $mem[0];
                     }
 
-                    if($keyname=="card slot"){
-                        $data['card_slot']=strip_tags($td->innertext);
+                    if ($keyname == "card slot") {
+                        $data['card_slot'] = strip_tags($td->innertext);
                     }
                 }
 
